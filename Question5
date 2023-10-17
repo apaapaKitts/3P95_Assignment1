@@ -1,0 +1,225 @@
+
+import java.util.*;
+
+public class Question5 {
+    public static List<char[]> inputStrings;
+    static List<char[]> processedStrings;
+    static List<char[]> processedStrings_correct;
+
+    public void displayMyWork() {
+        getInput("abcdefG1","CCDDEExy","1234567b", "8665");                     // insert the strings given into a list of inputs
+        welcomeMessage();                                                               // welcome the user
+        processStrings();                                                               // run the input through the processing algorithm
+        printStrings(processedStrings);                                                 // display the processed strings
+        messageToUser();                                                                // update the user about the incorrectness of the processing algorithm
+        processStringsCorrectly();                                                      // run the input through a corrected version of the processing algorithm
+        printStrings(processedStrings_correct);                                          // display the correctly processed strings
+        messageAboutDeltaDebugging();                                                   // prepare the user for delta debugging
+        deltaDebugging(processedStrings,processedStrings_correct);                       // find a minimal bug, if it exists, for each input string
+        exitMessage();                                                                  // gracefully exit the program
+    }
+
+    /** IMPORTANT NOTE
+     * The numeric values 5-9 when multiplied by 2 yield integers that are 2 chars long, not one. This is the key bug.
+     * Thus, the corrected version of the algorithm does not multiply integer values by 2. The integers are simply left alone, and added to the string.
+     * To conduct delta debugging, i generate a 'possiblyIncorrect' out using the given algorithm, and a 'correct' output using the corrected version
+     * of the original algorithm.
+     */
+    private static String printInput(char[] someChars){
+        String current = "";
+        for (char c : someChars){
+            current = current + c;
+        }
+        return current;
+    }
+
+    private static void deltaDebugging(List<char[]> possiblyIncorrectOutput, List<char[]> correctOutput){
+        int index = 0;
+        for (char[] inputString : possiblyIncorrectOutput) {
+            System.out.println();
+            System.out.println("Delta debugging for the input: " + printInput(inputStrings.get(index)));
+            System.out.println("Output was: " + printInput(inputString));
+            // check if possibly incorrect output is actually correct
+            if ( stringsMatch(possiblyIncorrectOutput.get(index),correctOutput.get(index))){
+                System.out.println(printInput(inputString) +" is the correct output. No need to perform delta debugging.");
+            }
+            else {
+                reduce_input_so_that_bug_is_minimal(inputString,correctOutput.get(index), index, 0);
+            }
+            index++;
+        }
+    }
+
+    private static void reduce_input_so_that_bug_is_minimal(char[] possiblyIncorrectOutput, char[] correctOutput, int index, int positionOfChar) {
+        if (possiblyIncorrectOutput.length == 0 ){
+        }
+        else if (possiblyIncorrectOutput[0] != correctOutput[0]) {
+            System.out.println("We have discovered a minimal bug for this input. It is the char: " + getProblematicChar(index, positionOfChar)); // get the INPUT AT INDEX);
+        }
+        else {
+            // build the same array but take away first element
+            char[] shrunkenOutput_possiblyIncorrect = new char[possiblyIncorrectOutput.length-1];
+            char[] shrunkenOutput_Correct = new char[possiblyIncorrectOutput.length-1];
+            for (int i = 1 ; i < possiblyIncorrectOutput.length; i++ ) {
+                shrunkenOutput_possiblyIncorrect[i-1] = possiblyIncorrectOutput[i];
+                shrunkenOutput_Correct[i-1] = correctOutput[i];
+            }
+            reduce_input_so_that_bug_is_minimal(shrunkenOutput_possiblyIncorrect, shrunkenOutput_Correct, index, positionOfChar+1);
+        }
+    }
+    private static char getProblematicChar(int ithWord, int ithChar){
+        // get the character from ith word in the array that is breaking the code!
+        return inputStrings.get(ithWord)[ithChar];
+    }
+    private static void welcomeMessage(){
+        System.out.println("This is Question 5 of Assignment 1 for COSC 3P95");
+        System.out.println("The test cases provided in the assignment are: ");
+
+        printStrings(inputStrings);
+        System.out.println();
+    }
+    /** getInput(String ... s1, s2, s3,...,sn
+     * getInput accepts an arbitrary number of strings which will
+     * be tested by the processString algorithm for bugs.
+     *
+     * getInput works by converting each string into a char array
+     * the char arrays are then stored in a linked list, which is returned
+     * via a pointer to the head
+     * @param strings
+     */
+    public static void getInput(String ... strings){
+        List<char[]> inputList = new ArrayList<char[]>();
+        for (String s : strings){
+            // make the string into a char list
+            char[] theStringAsACharList = s.toCharArray();
+            inputList.add(theStringAsACharList);
+
+        }
+        inputStrings = inputList;
+    }
+    /** processStrings(char[] theString)
+     * for all strings provided in the input,
+     * process the string
+     * place processed string into a list of strings
+     */
+    private static void processStrings(){
+        System.out.println("I will now run the input strings through the original (buggy) algorithm, and print the results");
+        processedStrings = processInputString(inputStrings);
+        System.out.println("The input has been processed. Displaying the results now.");
+    }
+    private static List<char[]> processInputString(List<char[]> in){
+        List<char[]> out = new ArrayList<>();
+
+        // for each char[] in the list (for each string that was given in the input
+        for (char[] inputString: in){
+            char[] processedInput = new char[inputString.length];       // build a char array to hold the new string of chars
+            int index = 0;
+            for(char aChar: inputString){       // for each of the characters in the string
+                if(Character.isUpperCase(aChar)){
+                    processedInput[index]=Character.toLowerCase(aChar);
+                }
+                else if(character_Is_a_Numerical_Digit(aChar)) {
+                    // convert aChar into its integer value
+                    int temp = Integer.parseInt(Character.toString(aChar));
+                    // double temp
+                    temp = temp*2;
+                    // convert temp back into a char
+                    String curr = Integer.toString(temp);
+                    char char_of_curr = curr.charAt(0);
+                    // insert the value into processedInput
+                    processedInput[index] = char_of_curr;
+                }
+                else {
+                    processedInput[index] = Character.toUpperCase(aChar);
+                }
+                index++;
+            }
+            // add the processedInput to the list
+            out.add(processedInput);
+        }
+        return out;
+    }
+    public static List<char[]> processStringCorrectly(List<char[]> in){
+        List<char[]> out = new ArrayList<>();
+
+        // for each char[] in the list (for each string that was given in the input
+        for (char[] inputString: in){
+            char[] processedInput = new char[inputString.length];       // build a char array to hold the new string of chars
+            int index = 0;
+            for(char aChar: inputString){       // for each of the characters in the string
+                if(Character.isUpperCase(aChar)){
+                    processedInput[index]=Character.toLowerCase(aChar);
+                }
+                else if(character_Is_a_Numerical_Digit(aChar)) {
+                    // convert aChar into its integer value
+                    int temp = Integer.parseInt(Character.toString(aChar));
+                    // convert temp back into a char
+                    String curr = Integer.toString(temp);
+                    char char_of_curr = curr.charAt(0);
+                    // insert the value into processedInput
+                    processedInput[index] = char_of_curr;
+                }
+                else {
+                    processedInput[index] = Character.toUpperCase(aChar);
+                }
+                index++;
+            }
+            // add the processedInput to the list
+            out.add(processedInput);
+        }
+        return out;
+    }
+    private static void printStrings(List<char[]> in){
+        System.out.println();
+        for (char[] c: in){
+            for (char cc : c){
+                System.out.print(cc);
+            }
+            System.out.print("   ");
+        }
+        System.out.println();
+    }
+    private static void messageAboutDeltaDebugging(){
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("We will now perform delta debugging.");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+    }
+    private static void messageToUser(){
+        System.out.println("The processed strings are not as they should be. We are told in the assignment that numerical values should remain unchanged. \n" +
+                "We clearly see that numerical values are being modified.");
+        System.out.println("To perform delta debugging, we must know what the desired output should be.");
+        System.out.println("To generate the desired outputs, I have modified the processing algorithm so that it only produces correct ouput, \n which we will need to conduct comparisons");
+        System.out.println("The correct output is: ");
+    }
+    private static void exitMessage(){
+        System.out.println();
+        System.out.println();
+        System.out.println("I hope you have enjoyed watching this program demonstrate delta debugging.");
+        System.out.println("The program is now complete.");
+        System.out.println("Thanks, bye.");
+    }
+    private static void processStringsCorrectly(){
+        processedStrings_correct = processStringCorrectly(inputStrings);
+    }
+    private static boolean character_Is_a_Numerical_Digit(char c){
+        if (c == '0' | c =='1'|c=='2'|c=='3'|c=='4'|c=='5'|c=='6'|c=='7'|c=='8'|c=='9'){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    private static boolean stringsMatch(char[] possiblyIncorrectOutput, char[] correctOutput){
+        boolean flag = true;
+        for ( int j = 0 ; j < possiblyIncorrectOutput.length ; j++) {
+            if(possiblyIncorrectOutput[j] != correctOutput[j]){
+                flag = false;
+            }
+        }
+        return flag;
+    }
+}

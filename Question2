@@ -1,0 +1,89 @@
+/**Question2 is a class that holds the data and methods necessary to answer question2 of assignment 1
+ * for COSC 3P95, Fall 2023
+ *
+ * The single variable of this class is a list of integers.
+ *
+ * There are a variety of methods which generate a random list of integers, display messages to the user,
+ *  and sort the integers. The primary method which demonstrates the capabilities of this class is called:
+ *      'displayMyWork()', which takes the user through a comprehensive walkthrough of question2.
+ *
+ *  Author: Pauls, A.
+ *  Date: Oct 10, 2023
+ *  ID: 6368914
+ *
+ */
+public class Question2 {
+    private static List<Integer> integerArray;
+
+    /** displayMyWork() is called by the main class, and shows off the features of this class.
+     * this method is designed to make life easy for markers.
+     *
+     * the user is greeted on SYSOUT, shown a randomly generated array of integers, shown the array sorted, and provided
+     * with an exit message.
+     */
+    public void displayMyWork(){
+        introductoryMessage();              // welcome the user on SYSOUT
+        generateRandomArray();              // produce an array of integers (has randomized length, has randomized elements)
+        printArray(integerArray);           // display the newly developed random array
+        messageToUser();                    // update user that the array is now ready to be sorted
+        sortArray(integerArray);            // sort the array
+        printArray(integerArray);           // display the sorted version of the array
+        exitMessage();                      // inform user that the program is complete
+    }
+
+    /** exitMessage() is a simple method that talks to the user on SYSOUT
+     *
+     */
+    private static void exitMessage(){
+        System.out.println();
+        System.out.println("-------------------------");
+        System.out.println("That is the end of this program!");
+        System.out.println("Thanks, bye");
+    }
+    /** messageToUser() is a simple method that tells the random array is about to be sorted.*/
+    private static void messageToUser(){
+        System.out.println();
+        System.out.println("-------------------------");
+        System.out.println("We will not sort the array and print it to screen for comparison");
+    }
+    private static void sortArray(List<Integer> randomInput){
+        Collections.sort(randomInput);          // sort the array
+    }
+    /** a simple method to greet the user on SYSOUT */
+    private static void introductoryMessage(){
+        System.out.println("This is the implementation of question 2, Assignment 1 for COSC 3P95, Fall 2023.");
+        System.out.println("In this implementation, there exists \n - a method which sorts an array of integers from lowest to highest" +
+                "       \n - a method which generates random integer arrays \n - an automated program which shows how these two methods perform on SYSOUT");
+    }
+    /** print the array passed as parameter */
+    private static void printArray(List<Integer> theList){
+        System.out.print("[ ");
+        for(int i = 0 ; i <theList.size()  ; i++){
+            System.out.print(theList.get(i) + " ");
+        }
+        System.out.print("]");
+    }
+
+    /** generateRandomArray() produces a new array each time it is called.
+     *  method generates a random integer which will be the length of the array, and
+     *  generates a random integer for each cell in the array
+     *
+     *  there are bounds on the minimum and maximum size that the array can be
+     *  there are also bounds on the minimum and maximum value that each element may take
+     *  these bounds are arbitrary and can be adjusted easily
+     */
+    private static void generateRandomArray(){
+        integerArray=new ArrayList<Integer>();          // initialize list
+        System.out.println();
+        System.out.println("An array of random length and of random integer values will now be generated.");
+        System.out.println("Currently generating the random length.  Constraints: 1 <= length <= 50 ");
+        int randomlyGeneratedNumberOfNumbers = (int) (Math.random() * ((50) + 1)) +1;           // 0 <= length <= 50
+        System.out.println("We will now fill the array of length: " + randomlyGeneratedNumberOfNumbers + " with randomly generated numbers between 1 and 25");
+        for (int i = 0 ; i < randomlyGeneratedNumberOfNumbers; i++){        // for each of the elements
+            int randomInteger = (int) (Math.random() * ((25) + 1));         // generate a random int such that 0 <= number <= 25
+            integerArray.add(randomInteger);                                // insert the integer into the array
+        }
+        System.out.println("The random input array of integers has been generated. Returning input array now.");
+    }
+}
+

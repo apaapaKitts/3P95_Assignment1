@@ -1,0 +1,6 @@
+public class Main {
+    public static void main(String[] args) {
+        Question5 q5 = new Question5();
+        q5.displayMyWork();
+    }
+}

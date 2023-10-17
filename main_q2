@@ -1,0 +1,11 @@
+/** main is responsible for creating an instance of Question2, and then running Question2's primary
+ * method called 'displayMyWork()'
+ *
+ * while evaluating my work, main will be the class that is run after compilation.
+ */
+public class Main {
+    public static void main(String[] args) {
+        Question2 q2 = new Question2();
+        q2.displayMyWork();
+    }
+}
